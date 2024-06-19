@@ -1,14 +1,15 @@
 module Main where
 
-import Control.Monad ( replicateM )
+a03 :: Int -> [Int] -> [Int] -> Bool
+a03 _ [] _ = False
+a03 k (p : ps) qs = (k - p) `elem` qs || a03 k ps qs
+
+yn :: Bool -> String
+yn b = if b then "Yes" else "No"
 
 main :: IO ()
 main = do
-    n <- readLn
-    [x, y] <- map read . words <$> getLine
-    xys <- map (pair . map read . words) <$> replicateM q getLine
-    print 0
-
-pair :: [a] -> (a, a)
-pair [x, y] = (x, y)
-pair _ = (undefined, undefined)
+    [_, k] <- map read . words <$> getLine
+    ps <- map read . words <$> getLine
+    qs <- map read . words <$> getLine
+    putStrLn . yn . a03 k ps $ qs
