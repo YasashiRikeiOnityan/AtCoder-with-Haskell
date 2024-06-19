@@ -1,14 +1,19 @@
 module Main where
 
-import Control.Monad ( replicateM )
+-- int2binary :: Int -> [Char]
+-- int2binary 0 = ['0']
+-- int2binary 1 = ['1']
+-- int2binary n = (if even n then '0' else '1') : int2binary (n `div` 2)
+
+int2binary :: Int -> String
+int2binary 0 = "0"
+int2binary 1 = "1"
+int2binary n = int2binary (n `div` 2) ++ show (n `mod` 2)
+
+assignZero :: String -> String
+assignZero s = replicate (10 - length s) '0' ++ s
 
 main :: IO ()
 main = do
     n <- readLn
-    [x, y] <- map read . words <$> getLine
-    xys <- map (pair . map read . words) <$> replicateM q getLine
-    print 0
-
-pair :: [a] -> (a, a)
-pair [x, y] = (x, y)
-pair _ = (undefined, undefined)
+    putStrLn . assignZero . int2binary $ n
