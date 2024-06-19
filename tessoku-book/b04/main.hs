@@ -1,14 +1,10 @@
 module Main where
 
-import Control.Monad ( replicateM )
+binary2int :: String -> Int
+binary2int [] = 0
+binary2int (x : xs) = read [x] * 2 ^ length xs + binary2int xs
 
 main :: IO ()
 main = do
-    n <- readLn
-    [x, y] <- map read . words <$> getLine
-    xys <- map (pair . map read . words) <$> replicateM q getLine
-    print 0
-
-pair :: [a] -> (a, a)
-pair [x, y] = (x, y)
-pair _ = (undefined, undefined)
+    s <- getLine
+    print . binary2int $ s
