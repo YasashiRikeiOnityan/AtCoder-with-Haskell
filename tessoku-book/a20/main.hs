@@ -1,6 +1,7 @@
 module Main where
 
 import Data.Bifunctor ( bimap )
+import Data.Array ( Ix(range), Array, (!), listArray ) 
 
 lcs :: String -> String -> (String, Int)
 lcs s t = head $ foldr phi (replicate (succ (length s)) ("", 0)) t
@@ -11,5 +12,29 @@ lcs s t = head $ foldr phi (replicate (succ (length s)) ("", 0)) t
             | x == y    = bimap (y:) (+1) cs2 : acc
             | otherwise = (if snd cs1 > snd a then cs1 else a) : acc
 
+lcs' :: String -> String -> Int
+lcs' xs ys = table ! (m,n)
+    where
+        (m, n) = (length xs, length ys)
+
+        x = listArray (1, m) xs
+        y = listArray (1, n) ys
+
+        table :: Array (Int,Int) Int
+        table = listArray bnds [dist ij | ij <- range bnds]
+        bnds  = ((0, 0), (m, n))
+        
+        dist (0, 0) = 0
+        dist (0, j) = table ! (0, pred j)
+        dist (i, 0) = table ! (pred i, 0)
+        dist (i, j) = maximum [
+                table ! (pred i, j), 
+                table ! (i, pred j),
+                if x ! i == y ! j then succ (table ! (pred i, pred j)) else table ! (pred i, pred j)
+            ]
+
 main :: IO ()
-main = getLine >>= \s -> getLine >>= \t -> print . snd $ lcs s t
+main = getLine >>= \s -> getLine >>= \t -> print $ lcs' s t
+
+-- main :: IO ()
+-- main = getLine >>= \s -> getLine >>= \t -> print . snd $ lcs s t
