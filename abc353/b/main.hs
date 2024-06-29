@@ -1,14 +1,13 @@
 module Main where
 
-import Control.Monad ( replicateM )
+atraction :: Int -> Int -> [Int] -> Int
+atraction _ _ [] = 1
+atraction w k aas@(a : as)
+    | w + a > k  = succ $ atraction 0 k aas
+    | otherwise  = atraction (w + a) k as
 
 main :: IO ()
 main = do
-    n <- readLn
-    [x, y] <- map read . words <$> getLine :: IO [Int]
-    xys <- map (pair . map read . words) <$> replicateM n getLine :: IO [(Int, Int)]
-    print 0
-
-pair :: [a] -> (a, a)
-pair [x, y] = (x, y)
-pair _ = (undefined, undefined)
+    [_, k] <- map read . words <$> getLine :: IO [Int]
+    as <- map read . words <$> getLine :: IO [Int]
+    print . atraction 0 k $ as
