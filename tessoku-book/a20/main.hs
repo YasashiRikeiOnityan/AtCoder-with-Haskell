@@ -1,10 +1,11 @@
 module Main where
 
 import Data.Bifunctor ( bimap )
-import Data.Array ( Ix(range), Array, (!), listArray ) 
+import Data.Array ( Ix(range), Array, (!), listArray )
+import Data.List ( foldl', scanl' )
 
-lcs :: String -> String -> (String, Int)
-lcs s t = head $ foldr phi (replicate (succ (length s)) ("", 0)) t
+lcs :: String -> String -> Int
+lcs s t = snd . head $ foldr phi (replicate (succ (length s)) ("", 0)) t
     where
         phi y acc = foldr (step y) [("", 0)] (zip3 s acc (tail acc))
         step _ _ [] = undefined
@@ -33,8 +34,11 @@ lcs' xs ys = table ! (m,n)
                 if x ! i == y ! j then succ (table ! (pred i, pred j)) else table ! (pred i, pred j)
             ]
 
-main :: IO ()
-main = getLine >>= \s -> getLine >>= \t -> print $ lcs' s t
+lcs'' :: String -> String -> Int
+lcs'' s t = last . foldl' phi (replicate (succ (length t)) 0) . map (0,) $ s
+    where
+        phi acc (i, a) = scanl' (step a) i $ zip3 t acc (tail acc)
+        step a i (b, j, k) = maximum [i, (if a == b then succ else id) j, k]
 
--- main :: IO ()
--- main = getLine >>= \s -> getLine >>= \t -> print . snd $ lcs s t
+main :: IO ()
+main = getLine >>= \s -> getLine >>= \t -> print $ lcs'' s t
