@@ -2,7 +2,7 @@ module Main where
 
 import Data.Bifunctor ( bimap )
 import Data.Array ( Ix(range), Array, (!), listArray )
-import Data.List ( foldl', scanl' )
+import Data.List ( foldl', scanl', foldr, scanr )
 
 lcs :: String -> String -> Int
 lcs s t = snd . head $ foldr phi (replicate (succ (length s)) ("", 0)) t
@@ -40,5 +40,11 @@ lcs'' s t = last . foldl' phi (replicate (succ (length t)) 0) . map (0,) $ s
         phi acc (i, a) = scanl' (step a) i $ zip3 t acc (tail acc)
         step a i (b, j, k) = maximum [i, (if a == b then succ else id) j, k]
 
+lcs''' :: String -> String -> Int
+lcs''' s t = head . foldr (phi . (0,)) (replicate (succ (length t)) 0) $ s
+    where
+        phi (i, a) acc = scanr (step a) i $ zip3 t (tail acc) acc
+        step a (b, j, k) i = maximum [i, (if a == b then succ else id) j, k]
+
 main :: IO ()
-main = getLine >>= \s -> getLine >>= \t -> print $ lcs'' s t
+main = getLine >>= \s -> getLine >>= \t -> print $ lcs s t
